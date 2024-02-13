@@ -20,6 +20,8 @@ Window Functions for ranking
 Table Joins
 
 -- Create schema and set search path
+
+
 CREATE DATABASE dannys_diner;
 GO
 
@@ -36,6 +38,8 @@ CREATE TABLE sales (
 GO
 
 -- Insert data into sales table
+
+
 INSERT INTO sales
   (customer_id, order_date, product_id)
 VALUES
@@ -57,6 +61,8 @@ VALUES
 GO
 
 -- Create menu table
+
+
 CREATE TABLE menu (
   product_id INT,
   product_name VARCHAR(5),
@@ -65,6 +71,8 @@ CREATE TABLE menu (
 GO
 
 -- Insert data into menu table
+
+
 INSERT INTO menu
   (product_id, product_name, price)
 VALUES
@@ -74,6 +82,8 @@ VALUES
 GO
 
 -- Create members table
+
+
 CREATE TABLE members (
   customer_id VARCHAR(1),
   join_date DATE
@@ -81,6 +91,8 @@ CREATE TABLE members (
 GO
 
 -- Insert data into members table
+
+
 INSERT INTO members
   (customer_id, join_date)
 VALUES
@@ -88,7 +100,8 @@ VALUES
   ('B', '2021-01-09');
 
 --What is the total amount each customer spent at the restaurant?
-SELECT
+
+
   s.customer_id,
   SUM(m.price) AS total_amount_spent
 FROM
@@ -99,6 +112,8 @@ GROUP BY
   s.customer_id;
 
 --How many days has each customer visited the restaurant?
+
+
 SELECT
   customer_id,
   COUNT(DISTINCT order_date) AS days_visited
@@ -108,6 +123,8 @@ GROUP BY
   customer_id;
 
 --What was the first item from the menu purchased by each customer?
+
+
 WITH RankedSales AS (
   SELECT
     customer_id,
@@ -128,6 +145,8 @@ WHERE
   r.rn = 1;
 
 --What is the most purchased item on the menu and how many times was it purchased by all customers?
+
+
 SELECT TOP 1
   m.product_name AS most_purchased_item,
   COUNT(s.product_id) AS purchase_count
@@ -141,6 +160,8 @@ ORDER BY
   purchase_count DESC;
 
 --Which item was the most popular for each customer?
+
+
 WITH RankedItems AS (
   SELECT
     customer_id,
@@ -161,8 +182,11 @@ JOIN
   menu m ON r.product_id = m.product_id
 WHERE
   r.rn = 1;
+  
 
 --Which item was purchased first by the customer after they became a member?
+
+
 WITH MemberFirstPurchase AS (
   SELECT
     s.customer_id,
@@ -189,6 +213,8 @@ WHERE
   first_purchase_date = (SELECT MIN(join_date) FROM members WHERE customer_id = MemberFirstPurchase.customer_id);
 
 --Which item was purchased just before the customer became a member?
+
+
 WITH LastPurchaseBeforeMembership AS (
   SELECT
     s.customer_id,
@@ -212,6 +238,8 @@ FROM
 
 
 --What is the total items and amount spent for each member before they became a member?
+
+
 WITH MemberPurchaseSummary AS (
   SELECT
     s.customer_id,
